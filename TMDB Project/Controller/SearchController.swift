@@ -13,13 +13,13 @@ protocol SearchControllerDelegate: AnyObject {
 
 private let identifier = "TitleCollectionViewCell"
 
-class SearchController: UIViewController {
+class SearchController: UIViewController, SearchResultsControllerDelegate {
     
     //MARK: - properties
     
     public var titles: [Title] = [Title]()
     
-    public weak var delegate: SearchControllerDelegate?
+    weak var delegate: SearchControllerDelegate?
     
     public let discoverCollectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
@@ -124,14 +124,23 @@ extension SearchController: UICollectionViewDelegate {
         collectionView.deselectItem(at: indexPath, animated: true)
         
         let title = titles[indexPath.row]
-
-        APICaller.shared.getMovie(with: title.original_title ?? "") { [weak self] result in
+        guard let titleName = title.original_title ?? title.title else { return }
+        
+        APICaller.shared.getMovie(with: titleName + " trailer") { [weak self ] result in
             switch result {
             case .success(let videoElement):
+                
                 DispatchQueue.main.async {
-                    self?.delegate?.SearchControllerDidTapItem(TitlePreviewViewModel(title: title.original_title ?? "", youtubeView: videoElement, titleOverview: title.overview ?? ""))
+                    let title = self?.titles[indexPath.row]
+                    guard let titleOverview = title?.overview else { return }
+                
+                    
+                    let viewMdeol = TitlePreviewViewModel(title: titleName, youtubeView: videoElement, titleOverview: titleOverview)
+                    self?.delegate?.SearchControllerDidTapItem(viewMdeol)
                 }
+                
 
+                
             case .failure(let error):
                 print(error.localizedDescription)
             }
@@ -141,8 +150,8 @@ extension SearchController: UICollectionViewDelegate {
 
 //MARK: - SearchResultsViewController
 
-extension SearchController: UISearchResultsUpdating, SearchResultsControllerDelegate {
-    
+extension SearchController: UISearchResultsUpdating {
+
     func updateSearchResults(for searchController: UISearchController) {
         let searchBar = searchController.searchBar
         

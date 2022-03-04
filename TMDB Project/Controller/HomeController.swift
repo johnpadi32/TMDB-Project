@@ -174,12 +174,12 @@ extension HomeController {
         return 25
     }
     
-//    override func scrollViewDidScroll(_ scrollView: UIScrollView) {
-//        let defaulOffSet = view.safeAreaInsets.top
-//        let offset = scrollView.contentOffset.y + defaulOffSet
-//        navigationController?.navigationBar.transform = .init(translationX: 0, y: min(0, -offset))
-//
-//    }
+    override func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        let defaulOffSet = view.safeAreaInsets.top
+        let offset = scrollView.contentOffset.y + defaulOffSet
+        navigationController?.navigationBar.transform = .init(translationX: 0, y: min(0, -offset))
+        
+    }
 }
 
 extension HomeController: CollectionViewTableViewCellDelegate {
