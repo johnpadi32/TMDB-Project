@@ -53,23 +53,14 @@ class HomeController: UIViewController {
     //MARK: - Helpers
     
     func configureNavBar() {
-        
         navigationController?.navigationBar.barStyle = .black
-        
         navigationItem.titleView = UIImageView(image: UIImage(named: "TMDBLogo"))
-//        title = "TMDB"
-//        navigationController?.navigationBar.prefersLargeTitles = true
-        
-//       var image = UIImage(named: "TMDBLogo")
-//        image = image?.withRenderingMode(.alwaysOriginal)
-//        navigationItem.leftBarButtonItem = UIBarButtonItem(image: image, style: .done, target: self, action: nil)
-        
-//        navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage(systemName: "magnifyingglass"), style: .done, target: self, action: nil)
+        navigationController?.navigationBar.tintColor = .white
+
         navigationItem.rightBarButtonItems = [
-            UIBarButtonItem(image: UIImage(systemName: "magnifyingglass"), style: .done, target: self, action: nil),
+            UIBarButtonItem(image: UIImage(systemName: "magnifyingglass"), style: .done, target: self, action: #selector(handleSearchPressed)),
             UIBarButtonItem(image: UIImage(systemName: "arrow.down.to.line"), style: .done, target: self, action: nil)
         ]
-        navigationController?.navigationBar.tintColor = .white
     }
     
     func configureTableView() {
@@ -94,6 +85,16 @@ class HomeController: UIViewController {
                 print(error.localizedDescription)
             }
         }
+    }
+    
+    //MARK: - Actions
+    
+    @objc func handleSearchPressed() {
+        print("Go to Search Controller")
+        let controller = ExploreController()
+        let nav = UINavigationController(rootViewController: controller)
+        nav.modalPresentationStyle = .fullScreen
+        present(nav, animated: true)
     }
 }
 
@@ -165,20 +166,18 @@ extension HomeController: UITableViewDataSource {
         default:
             return UITableViewCell()
         }
-        
         return cell
     }
     
-//    func tableView(_ tableView: UITableView, willDisplayHeaderView view: UIView, forSection section: Int) {
-//
-//        guard let header = view as? UITableViewHeaderFooterView else { return }
-//
-//        header.textLabel?.font = .systemFont(ofSize: 18, weight: .semibold)
-//        header.textLabel?.frame = CGRect(x: header.bounds.origin.x + 20, y: header.bounds.origin.y, width: 80, height: header.bounds.height)
-//        header.textLabel?.textColor = .white
-//        header.textLabel?.text = header.textLabel?.text?.capitalizeFirstLetter()
-//
-//    }
+    func tableView(_ tableView: UITableView, willDisplayHeaderView view: UIView, forSection section: Int) {
+        guard let header = view as? UITableViewHeaderFooterView else { return }
+
+        header.textLabel?.font = .systemFont(ofSize: 18, weight: .semibold)
+        header.textLabel?.frame = CGRect(x: header.bounds.origin.x + 20, y: header.bounds.origin.y, width: 80, height: header.bounds.height)
+        header.textLabel?.textColor = .white
+        header.textLabel?.text = header.textLabel?.text?.capitalizeFirstLetter()
+
+    }
     
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         let view = UIView()
@@ -219,6 +218,7 @@ extension HomeController: UITableViewDelegate {
 }
 
 extension HomeController: CollectionViewTableViewCellDelegate {
+    
     func CollectionViewTableViewCellDidTapCell(_ cell: CollectionViewTableViewCell, viewModel: TitlePreviewViewModel) {
         DispatchQueue.main.async { [weak self] in
             let vc = TitlePreviewController()

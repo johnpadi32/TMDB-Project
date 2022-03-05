@@ -22,7 +22,6 @@ class HeroHeaderView: UIView {
         ]
         gradientLayer.frame = bounds
         layer.addSublayer(gradientLayer)
-        
     }
     
     private let heroImageView: UIImageView = {
@@ -56,7 +55,6 @@ class HeroHeaderView: UIView {
     override init(frame: CGRect) {
         super.init(frame: frame)
         
-        
         addSubview(heroImageView)
         heroImageView.anchor(top: topAnchor, left: leftAnchor, bottom: bottomAnchor, right: rightAnchor, paddingTop: 0, paddingLeft: 0, paddingBottom: 0, paddingRight: 0)
         addGradient()
@@ -68,7 +66,6 @@ class HeroHeaderView: UIView {
         
         addSubview(stack)
         stack.anchor(left: leftAnchor, bottom: bottomAnchor, right: rightAnchor, paddingLeft: 20, paddingBottom: 25, paddingRight: 20)
-        
     }
     
     required init?(coder: NSCoder) {

@@ -7,78 +7,87 @@
 
 import UIKit
 
-private let identifier = "TitleTableViewCell"
-
-protocol SearchResultsControllerDelegate: AnyObject {
+protocol SearchResultsViewcontrollerDelegate: AnyObject {
     func SearchResultsControllerDidTapItem(_ viewModel: TitlePreviewViewModel)
 }
+
+private let identifer = "TitleTableViewCell"
 
 class SearchResultsController: UIViewController {
     
     //MARK: - Properties
     
     public var titles: [Title] = [Title]()
-    
-    public weak var delegate: SearchResultsControllerDelegate?
-    
-    public let searchResultTableView: UITableView = {
-        let table = UITableView()
-        table.register(TitleTableViewCell.self, forCellReuseIdentifier: identifier)
-        table.backgroundColor = .black
-        return table
+    public weak var delegate: SearchResultsViewcontrollerDelegate?
+
+    public let searchResultsCollectionView: UICollectionView = {
+       let layout = UICollectionViewFlowLayout()
+        layout.itemSize = CGSize(width: UIScreen.main.bounds.width / 3 - 10, height: 200)
+        layout.minimumInteritemSpacing = 0
+        
+        let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
+        collectionView.register(TitleCollectionViewCell.self, forCellWithReuseIdentifier: identifer)
+        collectionView.backgroundColor = .black
+        return collectionView
     }()
-    
     
     //MARK: - Lifecycle
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        configureTableView()
-        
+        configureCollectionView()
     }
     
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
-        
-        searchResultTableView.frame = view.bounds
+        searchResultsCollectionView.frame = view.bounds
     }
     
     //MARK: - Helpers
     
-    func configureTableView() {
+    func configureCollectionView() {
         view.backgroundColor = .black
         
-        view.addSubview(searchResultTableView)
-        searchResultTableView.delegate = self
-        searchResultTableView.dataSource = self
+        view.addSubview(searchResultsCollectionView)
+        searchResultsCollectionView.delegate = self
+        searchResultsCollectionView.dataSource = self
     }
 }
 
-//MARK: - UITableViewDataSource
+//MARK: - UICollectionViewDataSource
 
-extension SearchResultsController: UITableViewDataSource {
+extension SearchResultsController: UICollectionViewDataSource {
     
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return titles.count
     }
     
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        guard let cell = tableView.dequeueReusableCell(withIdentifier: identifier, for: indexPath) as? TitleTableViewCell else { return UITableViewCell() }
-        
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: identifer, for: indexPath) as? TitleCollectionViewCell else { return UICollectionViewCell() }
         let title = titles[indexPath.row]
-        let model = TitleViewModel(titleName: title.original_title ?? title.title ?? "Unknow name", posterURL: title.poster_path ?? "", overview: title.overview ?? "")
-        cell.configure(with: model)
+        cell.configure(with: title.poster_path ?? "")
         
         return cell
     }
 }
 
-//MARK: - UItableViewDelegate
+//MARK: - UICollectionViewDelegate
 
-extension SearchResultsController: UITableViewDelegate {
+extension SearchResultsController: UICollectionViewDelegate {
     
-    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 150
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        collectionView.deselectItem(at: indexPath, animated: true)
+        
+        let title = titles[indexPath.row]
+        
+        APICaller.shared.getMovie(with: title.original_title ?? "") { [weak self] result in
+            switch result {
+            case .success(let videoElement):
+                self?.delegate?.SearchResultsControllerDidTapItem(TitlePreviewViewModel(title: title.original_title ?? "", youtubeView: videoElement, titleOverview: title.overview ?? ""))
+            case .failure(let error):
+                print(error.localizedDescription)
+            }
+        }
     }
 }
