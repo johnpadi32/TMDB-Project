@@ -103,9 +103,9 @@ extension CollectionViewTableViewCell: UICollectionViewDelegate {
                 let title = self?.title[indexPath.row]
                 guard let titleOverview = title?.overview else { return }
                 
-                let viewModel = TitlePreviewViewModel(title: titleName, youtubeView: videoElement, titleOverview: titleOverview)
-                guard let strongSelf = self else { return }
-                self?.delegate?.CollectionViewTableViewCellDidTapCell(strongSelf, viewModel: viewModel)
+                let viewMdeol = TitlePreviewViewModel(title: titleName, youtubeView: videoElement, titleOverview: titleOverview)
+                guard let striongSelf = self else { return }
+                self?.delegate?.CollectionViewTableViewCellDidTapCell(striongSelf, viewModel: viewMdeol)
                 
             case .failure(let error):
                 print(error.localizedDescription)

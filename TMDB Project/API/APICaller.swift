@@ -11,7 +11,7 @@ struct Constants {
     static let API_KEY = "fd5239678b3e3fbfd6b6f9c2050d0e04"
     static let baseURL = "https://api.themoviedb.org"
     static let YoutubeBaseURL = "https://youtube.googleapis.com/youtube"
-    static let YoutubeAPI_KEY = "AIzaSyDyVDNI8_Gb_kdCq9hDFzCGnKR3SbWxQnE"
+    static let YoutubeAPI_KEY = "AIzaSyBgHFTa0Aj7lSof7Onqr_Oh7TLmx697nmQ"
 }
 
 enum APIError: Error {
