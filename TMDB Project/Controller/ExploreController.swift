@@ -173,9 +173,11 @@ extension ExploreController: UISearchResultsUpdating, SearchResultsViewcontrolle
     
     func SearchResultsControllerDidTapItem(_ viewModel: TitlePreviewViewModel) {
         DispatchQueue.main.async { [weak self] in
-            let vc = TitlePreviewController()
-            vc.configure(with: viewModel)
-            self?.navigationController?.pushViewController(vc, animated: true)
+            let controller = TitlePreviewController()
+            controller.configure(with: viewModel)
+            let nav = UINavigationController(rootViewController: controller)
+            nav.modalPresentationStyle = .fullScreen
+            self?.present(nav, animated: true)
         }
     }
 }

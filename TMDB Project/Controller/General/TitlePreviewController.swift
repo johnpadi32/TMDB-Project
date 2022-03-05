@@ -12,25 +12,25 @@ class TitlePreviewController: UIViewController {
     
     //MARK: - Properties
     
+    public var titles: [Title] = [Title]()
+
+    
     private let webView: WKWebView = {
        let wv = WKWebView()
-        wv.translatesAutoresizingMaskIntoConstraints = false
-        wv.backgroundColor = .black
         return wv
     }()
     
     private let titleLabel: UILabel = {
        let label = UILabel()
-        label.translatesAutoresizingMaskIntoConstraints = false
         label.font = .systemFont(ofSize: 22, weight: .bold)
         label.textColor = .white
+        label.numberOfLines = 0
         return label
     }()
     
     private let overviewLabel: UILabel = {
         let label = UILabel()
         label.font = .systemFont(ofSize: 16, weight: .regular)
-        label.translatesAutoresizingMaskIntoConstraints = false
         label.numberOfLines = 0
         label.textColor = .lightGray
         return label
@@ -38,12 +38,12 @@ class TitlePreviewController: UIViewController {
     
     private let downloadButton: UIButton = {
        let button = UIButton()
-        button.translatesAutoresizingMaskIntoConstraints = false
         button.setTitle("Download", for: .normal)
-        button.setTitleColor(.white, for: .normal)
-        button.backgroundColor = .red
+        button.setTitleColor(UIColor.tbmpColorButton , for: .normal)
+        button.layer.borderColor = #colorLiteral(red: 0.003921568627, green: 0.7061370015, blue: 0.893964231, alpha: 1)
+        button.layer.borderWidth = 1.8
         button.layer.cornerRadius = 8
-        button.layer.masksToBounds = true
+        button.setHeight(50)
         return button
     }()
         
@@ -52,48 +52,34 @@ class TitlePreviewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        view.backgroundColor = .black
+        configureNavBar()
         
         view.addSubview(webView)
-        view.addSubview(titleLabel)
-        view.addSubview(overviewLabel)
-        view.addSubview(downloadButton)
+        webView.anchor(top: view.safeAreaLayoutGuide.topAnchor, left: view.leftAnchor, right: view.rightAnchor, paddingTop: 0, paddingLeft: 0, paddingRight: 0, height: 200)
         
-        configureConstraints()
+        let stack = UIStackView(arrangedSubviews: [downloadButton, titleLabel, overviewLabel])
+        stack.axis = .vertical
+        stack.spacing = 20
+        
+        view.addSubview(stack)
+        stack.anchor(top: webView.bottomAnchor, left: view.leftAnchor, right: view.rightAnchor, paddingTop: 20, paddingLeft: 10, paddingRight: 10)
     }
     
     //MARK - Helpers
     
-    func configureConstraints() {
-        let webViewContraints = [
-            webView.topAnchor.constraint(equalTo: view.topAnchor, constant: 50),
-            webView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            webView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            webView.heightAnchor.constraint(equalToConstant: 300)
-        ]
+    func configureNavBar() {
+        view.backgroundColor = .black
+
+        navigationController?.navigationBar.barStyle = .black
+        navigationController?.navigationBar.tintColor = .white
         
-        let titleLabelConstraints = [
-            titleLabel.topAnchor.constraint(equalTo: webView.bottomAnchor, constant: 20),
-            titleLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20)
-        ]
-        
-        let overviewConstraints = [
-            overviewLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 15),
-            overviewLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
-            overviewLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor)
-        ]
-        
-        let downloadButtonConstraints = [
-            downloadButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            downloadButton.topAnchor.constraint(equalTo: overviewLabel.bottomAnchor, constant: 25),
-            downloadButton.widthAnchor.constraint(equalToConstant: 140),
-            downloadButton.heightAnchor.constraint(equalToConstant: 40)
-        ]
-        
-        NSLayoutConstraint.activate(webViewContraints)
-        NSLayoutConstraint.activate(titleLabelConstraints)
-        NSLayoutConstraint.activate(overviewConstraints)
-        NSLayoutConstraint.activate(downloadButtonConstraints)
+        navigationItem.leftBarButtonItem = UIBarButtonItem(image: UIImage(systemName: "chevron.down"), style: .done, target: self, action: #selector(handleDismiss))
+    }
+    
+    //MARK: - Actions
+    
+    @objc func handleDismiss() {
+        self.dismiss(animated: true, completion: nil)
     }
     
     func configure(with model: TitlePreviewViewModel) {

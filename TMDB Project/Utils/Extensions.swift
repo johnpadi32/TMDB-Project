@@ -13,6 +13,10 @@ extension String {
     }
 }
 
+extension UIColor {
+    static var tbmpColorButton = UIColor.init(red: 144/255, green: 206/255, blue: 161/255, alpha: 1)
+}
+
 extension UIView {
     func anchor(top: NSLayoutYAxisAnchor? = nil,
                 left: NSLayoutXAxisAnchor? = nil,
