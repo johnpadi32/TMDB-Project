@@ -27,7 +27,6 @@
 		48E92EE927CF6F6900644FD6 /* CollectionViewTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 48E92EE827CF6F6900644FD6 /* CollectionViewTableViewCell.swift */; };
 		48E92EEB27CF721700644FD6 /* HeroHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 48E92EEA27CF721700644FD6 /* HeroHeaderView.swift */; };
 		48E92EED27CF726500644FD6 /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 48E92EEC27CF726500644FD6 /* Extensions.swift */; };
-		48E92EF127CF7DE500644FD6 /* HomeSections.swift in Sources */ = {isa = PBXBuildFile; fileRef = 48E92EF027CF7DE500644FD6 /* HomeSections.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -51,7 +50,6 @@
 		48E92EE827CF6F6900644FD6 /* CollectionViewTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollectionViewTableViewCell.swift; sourceTree = "<group>"; };
 		48E92EEA27CF721700644FD6 /* HeroHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeroHeaderView.swift; sourceTree = "<group>"; };
 		48E92EEC27CF726500644FD6 /* Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
-		48E92EF027CF7DE500644FD6 /* HomeSections.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeSections.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -90,7 +88,6 @@
 		48B5722C27D04A680003B3C9 /* ViewModel */ = {
 			isa = PBXGroup;
 			children = (
-				48E92EF027CF7DE500644FD6 /* HomeSections.swift */,
 				48B5723827D0545F0003B3C9 /* TitleViewModel.swift */,
 				48B5724527D0A2490003B3C9 /* TitlePreviewViewModel.swift */,
 			);
@@ -259,7 +256,6 @@
 				48B5723727D0533F0003B3C9 /* YoutubeSearchResponse.swift in Sources */,
 				48B5724827D0A4E20003B3C9 /* TitlePreviewController.swift in Sources */,
 				48B5724027D058EE0003B3C9 /* SearchController.swift in Sources */,
-				48E92EF127CF7DE500644FD6 /* HomeSections.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

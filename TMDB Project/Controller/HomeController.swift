@@ -7,66 +7,89 @@
 
 import UIKit
 
-private let identifier = "CollectionViewTableViewCell"
+enum Section: Int {
+    case TrendingMovies = 0
+    case TrendingTv = 1
+    case Popular = 2
+    case Upcoming = 3
+    case topRated = 4
+}
 
-class HomeController: UITableViewController {
+private let reuseIdentifier = "CollectionViewTableViewCell"
+
+class HomeController: UIViewController {
     
     //MARK: - Properties
     
-    private var randomTrendingMovies: Title?
-
+    let sectionTitles: [String] = ["Trending Movie", "Trending Tv", "Popular", "Upcoming Movies", "Top rated"]
+    
+    private var randomTrendingMoview: Title?
+    
     private var headerView: HeroHeaderView?
     
+    private let homeFeedView: UITableView = {
+        let table = UITableView(frame: .zero, style: .grouped)
+        table.register(CollectionViewTableViewCell.self, forCellReuseIdentifier: reuseIdentifier)
+        table.backgroundColor = .black
+        return table
+    }()
+    
     //MARK: - Lifecycle
-
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
         configureNavBar()
-        configureTableview()
+        configureTableView()
         configureHeroHeaderView()
+    }
+    
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        
+        homeFeedView.frame = view.bounds
     }
     
     //MARK: - Helpers
     
     func configureNavBar() {
-        navigationController?.navigationBar.barStyle = .black
-        navigationController?.navigationBar.tintColor = .white
-                
-//        navigationItem.titleView = UIImageView(image: UIImage(named: "TMDBLogo"))
-        title = "TMDB"
-        view.backgroundColor = .black
-
-    }
-    
-    func configureTableview() {
-        tableView.register(CollectionViewTableViewCell.self, forCellReuseIdentifier: identifier)
-
-        headerView = HeroHeaderView(frame: CGRect(x: 0, y: 0, width: view.bounds.width, height: 500))
-        tableView.tableHeaderView = headerView
         
-        navigationItem.leftBarButtonItem = UIBarButtonItem(image: UIImage(systemName: "line.3.horizontal.decrease"), style: .done, target: self, action: nil)
-        navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage(systemName: "magnifyingglass"), style: .done, target: self, action: #selector(handleSearch))
+        navigationController?.navigationBar.barStyle = .black
+        
+        navigationItem.titleView = UIImageView(image: UIImage(named: "TMDBLogo"))
+//        title = "TMDB"
+//        navigationController?.navigationBar.prefersLargeTitles = true
+        
+//       var image = UIImage(named: "TMDBLogo")
+//        image = image?.withRenderingMode(.alwaysOriginal)
+//        navigationItem.leftBarButtonItem = UIBarButtonItem(image: image, style: .done, target: self, action: nil)
+        
+//        navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage(systemName: "magnifyingglass"), style: .done, target: self, action: nil)
+        navigationItem.rightBarButtonItems = [
+            UIBarButtonItem(image: UIImage(systemName: "magnifyingglass"), style: .done, target: self, action: nil),
+            UIBarButtonItem(image: UIImage(systemName: "arrow.down.to.line"), style: .done, target: self, action: nil)
+        ]
+        navigationController?.navigationBar.tintColor = .white
     }
     
-    //MARK: - Actions
-    
-    @objc func handleSearch() {
-        let controller = SearchController()
-        let nav = UINavigationController(rootViewController: controller)
-        nav.modalPresentationStyle = .fullScreen
-        present(nav, animated: true)
+    func configureTableView() {
+        view.backgroundColor = .black
+        view.addSubview(homeFeedView)
+
+        homeFeedView.delegate = self
+        homeFeedView.dataSource = self
+        
+        headerView = HeroHeaderView(frame: CGRect(x: 0, y: 0, width: view.bounds.width, height: 575))
+        homeFeedView.tableHeaderView = headerView
     }
-    
-    //MARK: - API
     
     func configureHeroHeaderView() {
         APICaller.shared.getPopularMovies { [weak self] result in
             switch result {
             case .success(let title):
-                let selectedTitle = title.randomElement()
-                self?.randomTrendingMovies = selectedTitle
-                self?.headerView?.configure(with: TitleViewModel(titleName: selectedTitle?.original_title ?? "", posterURL: selectedTitle?.poster_path ?? "", overview: selectedTitle?.overview ?? ""))
+                let selectedTile = title.randomElement()
+                self?.randomTrendingMoview = selectedTile
+                self?.headerView?.configure(with: TitleViewModel(titleName: selectedTile?.original_title ?? "", posterURL: selectedTile?.poster_path ?? "", overview: selectedTile?.overview ?? ""))
             case .failure(let error):
                 print(error.localizedDescription)
             }
@@ -76,37 +99,22 @@ class HomeController: UITableViewController {
 
 //MARK: - UITableViewDataSource
 
-extension HomeController {
+extension HomeController: UITableViewDataSource {
     
-    override func numberOfSections(in tableView: UITableView) -> Int {
-        return HomeSections.allCases.count
+    func numberOfSections(in tableView: UITableView) -> Int {
+        return sectionTitles.count
     }
     
-    override func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-        let view = UIView()
-        view.backgroundColor = .black
-
-        let title = UILabel()
-        title.font = UIFont.boldSystemFont(ofSize: 18)
-        title.textColor = .white
-        title.text = HomeSections(rawValue: section)?.description
-        view.addSubview(title)
-        title.centerY(inView: view, leftAnchor: view.leftAnchor, paddingLeft: 16)
-
-        return view
-    }
-    
-    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return 1
     }
     
-    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        guard let cell = tableView.dequeueReusableCell(withIdentifier: identifier, for: indexPath) as? CollectionViewTableViewCell else { return UITableViewCell() }
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: reuseIdentifier, for: indexPath) as? CollectionViewTableViewCell else { return UITableViewCell()}
         cell.delegate = self
         switch indexPath.section {
-            
-        case HomeSections.TrendingMovies.rawValue:
-            APICaller.shared.getPopularMovies { result in
+        case Section.TrendingMovies.rawValue:
+            APICaller.shared.getTrendingMovies { result in
                 switch result {
                 case .success(let title):
                     cell.configure(with: title)
@@ -115,7 +123,7 @@ extension HomeController {
                 }
             }
             
-        case HomeSections.TrendingTv.rawValue:
+        case Section.TrendingTv.rawValue:
             APICaller.shared.getTrendingTvs { result in
                 switch result {
                 case .success(let title):
@@ -124,8 +132,8 @@ extension HomeController {
                     print(error.localizedDescription)
                 }
             }
-            
-        case HomeSections.Popular.rawValue:
+                        
+        case Section.Popular.rawValue:
             APICaller.shared.getPopularMovies { result in
                 switch result {
                 case .success(let title):
@@ -135,7 +143,7 @@ extension HomeController {
                 }
             }
             
-        case HomeSections.Upcoming.rawValue:
+        case Section.Upcoming.rawValue:
             APICaller.shared.getUpcomingMovies { result in
                 switch result {
                 case .success(let title):
@@ -144,8 +152,8 @@ extension HomeController {
                     print(error.localizedDescription)
                 }
             }
-            
-        case HomeSections.topRated.rawValue:
+                        
+        case Section.topRated.rawValue:
             APICaller.shared.getTopRatedMovies { result in
                 switch result {
                 case .success(let title):
@@ -157,28 +165,56 @@ extension HomeController {
         default:
             return UITableViewCell()
         }
+        
         return cell
+    }
+    
+//    func tableView(_ tableView: UITableView, willDisplayHeaderView view: UIView, forSection section: Int) {
+//
+//        guard let header = view as? UITableViewHeaderFooterView else { return }
+//
+//        header.textLabel?.font = .systemFont(ofSize: 18, weight: .semibold)
+//        header.textLabel?.frame = CGRect(x: header.bounds.origin.x + 20, y: header.bounds.origin.y, width: 80, height: header.bounds.height)
+//        header.textLabel?.textColor = .white
+//        header.textLabel?.text = header.textLabel?.text?.capitalizeFirstLetter()
+//
+//    }
+    
+    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+        let view = UIView()
+        view.backgroundColor = .black
+
+        let title = UILabel()
+        title.font = UIFont.boldSystemFont(ofSize: 16)
+        title.textColor = .white
+        title.text = sectionTitles[section]
+        view.addSubview(title)
+        title.centerY(inView: view, leftAnchor: view.leftAnchor, paddingLeft: 16)
+
+        return view
     }
 }
 
+//MARK: - UITableViewDatasource
 
-//MARK: - UITableViewDelegate
-
-extension HomeController {
+extension HomeController: UITableViewDelegate {
     
-    override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return 200
     }
     
-    override func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-        return 25
+    func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+        return 35
     }
     
-    override func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        let defaulOffSet = view.safeAreaInsets.top
-        let offset = scrollView.contentOffset.y + defaulOffSet
+    func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+        return sectionTitles[section]
+    }
+    
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        let defaultOffSet = view.safeAreaInsets.top
+        let offset = scrollView.contentOffset.y + defaultOffSet
         navigationController?.navigationBar.transform = .init(translationX: 0, y: min(0, -offset))
-        
     }
 }
 
