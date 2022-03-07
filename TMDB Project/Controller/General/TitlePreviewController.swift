@@ -39,7 +39,7 @@ class TitlePreviewController: UIViewController {
     private let downloadButton: UIButton = {
        let button = UIButton()
         button.setTitle("Download", for: .normal)
-        button.setTitleColor(UIColor.tbmpColorButton , for: .normal)
+        button.setTitleColor(UIColor.lightGreenColorButton , for: .normal)
         button.layer.borderColor = #colorLiteral(red: 0.003921568627, green: 0.7061370015, blue: 0.893964231, alpha: 1)
         button.layer.borderWidth = 1.8
         button.layer.cornerRadius = 8

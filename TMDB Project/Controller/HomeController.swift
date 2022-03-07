@@ -25,6 +25,8 @@ class HomeController: UIViewController {
     
     private var randomTrendingMoview: Title?
     
+    private var TitlePreview: TitlePreviewViewModel?
+    
     private var headerView: HeroHeaderView?
     
     private let homeFeedView: UITableView = {
@@ -71,6 +73,7 @@ class HomeController: UIViewController {
         homeFeedView.dataSource = self
         
         headerView = HeroHeaderView(frame: CGRect(x: 0, y: 0, width: view.bounds.width, height: 575))
+        headerView?.delegate = self
         homeFeedView.tableHeaderView = headerView
     }
     
@@ -218,7 +221,7 @@ extension HomeController: UITableViewDelegate {
 }
 
 extension HomeController: CollectionViewTableViewCellDelegate {
-    
+
     func CollectionViewTableViewCellDidTapCell(_ cell: CollectionViewTableViewCell, viewModel: TitlePreviewViewModel) {
         DispatchQueue.main.async { [weak self] in
             
@@ -228,5 +231,35 @@ extension HomeController: CollectionViewTableViewCellDelegate {
             nav.modalPresentationStyle = .fullScreen
             self?.present(nav, animated: true)
         }
+    }
+}
+
+extension HomeController: HeroHeaderViewDelegate {
+    func didTapPreview() {
+                
+        guard let titleName = randomTrendingMoview?.original_title ?? randomTrendingMoview?.title else { return }
+
+        
+        APICaller.shared.getMovie(with: titleName) { [weak self] result in
+            switch result {
+            case .success(let videoElement):
+                DispatchQueue.main.async {
+                    
+                    let controller = TitlePreviewController()
+                    controller.configure(with: TitlePreviewViewModel(title: titleName, youtubeView: videoElement, titleOverview: self?.randomTrendingMoview?.overview ?? ""))
+                    let nav = UINavigationController(rootViewController: controller)
+                    nav.modalPresentationStyle = .fullScreen
+                    self?.headerView?.reloadInputViews()
+
+                    self?.present(nav, animated: true)
+                }
+            case .failure(let error):
+                print(error.localizedDescription)
+            }
+        }
+    }
+    
+    func didTapDownload() {
+        print("Download Movie")
     }
 }

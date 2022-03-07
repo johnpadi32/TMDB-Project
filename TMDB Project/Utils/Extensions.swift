@@ -13,8 +13,11 @@ extension String {
     }
 }
 
+///Button letter colors
 extension UIColor {
-    static var tbmpColorButton = UIColor.init(red: 144/255, green: 206/255, blue: 161/255, alpha: 1)
+    static var lightGreenColorButton = UIColor.init(red: 144/255, green: 206/255, blue: 161/255, alpha: 1)
+    
+    static var lightBlueColorButton = UIColor.init(red: 1/255, green: 180/255, blue: 228/225, alpha: 1)
 }
 
 extension UIView {

@@ -7,9 +7,16 @@
 
 import UIKit
 
+protocol HeroHeaderViewDelegate: AnyObject {
+    func didTapPreview()
+    func didTapDownload()
+}
+
 class HeroHeaderView: UIView {
     
     //MARK: - Properties
+            
+    weak var delegate: HeroHeaderViewDelegate?
     
     private func addGradient() {
         let gradientLayer = CAGradientLayer()
@@ -32,21 +39,25 @@ class HeroHeaderView: UIView {
         return iv
     }()
     
-    private let playButton: UIButton = {
-       let button = UIButton()
+    private lazy var playButton: UIButton = {
+        let button = UIButton(type: .system)
         button.setTitle("More info", for: .normal)
+        button.setTitleColor(UIColor.lightBlueColorButton, for: .normal)
         button.layer.borderColor = #colorLiteral(red: 0.5647826195, green: 0.8065228462, blue: 0.6325702071, alpha: 1)
         button.layer.borderWidth = 1.8
         button.layer.cornerRadius = 5
+        button.addTarget(self, action: #selector(handleShowPreview), for: .touchUpInside)
         return button
     }()
     
-    private let downloadButton: UIButton = {
-       let button = UIButton()
+    private lazy var downloadButton: UIButton = {
+        let button = UIButton(type: .system)
         button.setTitle("Download", for: .normal)
+        button.setTitleColor(UIColor.lightGreenColorButton, for: .normal)
         button.layer.borderColor = #colorLiteral(red: 0.003921568627, green: 0.7061370015, blue: 0.893964231, alpha: 1)
         button.layer.borderWidth = 1.8
         button.layer.cornerRadius = 5
+        button.addTarget(self, action: #selector(handleDownloadMovie), for: .touchUpInside)
         return button
     }()
     
@@ -73,6 +84,14 @@ class HeroHeaderView: UIView {
     }
     
     //MARK: - Actions
+    
+    @objc func handleShowPreview() {
+        delegate?.didTapPreview()
+    }
+    
+    @objc func handleDownloadMovie() {
+        delegate?.didTapDownload()
+    }
     
     public func configure(with model: TitleViewModel) {
         guard let url = URL(string: "https://image.tmdb.org/t/p/w500/\(model.posterURL)") else { return }
